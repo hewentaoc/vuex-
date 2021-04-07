@@ -1,24 +1,6 @@
-# vue-source-code
 
-## Project setup
-```
-npm install
-```
+## 需要解决的问题
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
-
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+> commit,dispatch函数的作用域  √
+> state取值的作用域　√
+> getter函数的实现
