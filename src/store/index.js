@@ -14,6 +14,11 @@ let store  = new Vuex.Store({
         modules:{
 
         },
+        getters:{
+          getAge:function(state){
+            return 'getters2: hwt' + state.age;
+          }
+        },
         mutations:{
           change:function(state,payload){
             console.log(state,'change2',payload)
@@ -28,16 +33,22 @@ let store  = new Vuex.Store({
         }
       },
     },
+    namespaced:true,
     state:{
       name:'hwt',
-      count:0
+      count:0,
     },
-    
-    namespaced:true,
+    getters:{
+      add(state){
+        console.log(666,state)
+        return ' getters' + ':' + state.count + state.name;
+      }
+    },
     mutations:{
       change:function(state,payload){
         console.log(state,'change1')
         state.count = state.count + payload;
+        state.name = 'po'
       }
     },
     actions:{

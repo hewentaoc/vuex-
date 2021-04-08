@@ -5,17 +5,20 @@ import {Vue} from './install'
  * 
  * 疑问点,为啥count的改变会导致num改变
  */
-let vm = null;
 export default class Store {
     constructor(options){
         let root = {};
         let path = [];
         this._mutations = {};
         this._actions = {};
+        this._getters = {};
         this.init(options,root,path)
-        vm  = new Vue({
-            data:root.state|| {}
+        let computed = this._computer;
+        let vm  = new Vue({
+            data:root.state|| {},
+            computed:computed
         })
+        this._vm = vm;
         this.state = vm._data;
     }
     /*
@@ -30,7 +33,11 @@ export default class Store {
             throw new Error(`${type} is not a function!`)
         }
     }
-
+    /**
+     * 触发actions函数
+     * @param {*} type 
+     * @param {*} payload 
+     */
     dispatch = (type,payload)=>{
         if(this._actions[type]){
             this._actions[type].forEach((item)=>{
@@ -41,6 +48,7 @@ export default class Store {
         }
     }
 
+
     /**
      * 初始化
      * @param {*} options 
@@ -49,7 +57,31 @@ export default class Store {
      */
     init(options,root,path){
       this.dspStore(options,root,path);
+      this.observerGetters();
     }
+
+    initVue(){
+
+    }
+    observerGetters(){
+        this._computer = {
+
+        }
+        this.getters = {};
+        let self = this;
+        Object.keys(this._getters).forEach(item=>{
+            let func = this._getters[item];
+            this._computer[item] = function(){
+                return func(this)
+            }
+            Object.defineProperty(this.getters,item,{
+                get:function(){
+                    return self._vm[item];
+                }
+            })
+        })
+    }
+
     /**
      * 注册mutation函数
      * @param {*} mutations 
@@ -57,6 +89,9 @@ export default class Store {
      * @param {*} namespaced 
      */
     registerMutations(mutations,path,namespaced,context){
+        if(!mutations){
+            return;
+        }
         if(typeof mutations != 'object'){
            throw new Error('Error!');
         }
@@ -82,6 +117,9 @@ export default class Store {
      * @param {*} namespaced 
      */
     registerActions(actions,path,namespaced,context){
+        if(!actions){
+            return;
+        }
         if(typeof actions != 'object'){
            throw new Error('Error!');  
         }
@@ -93,17 +131,52 @@ export default class Store {
                 this._actions[name + type].push((payload)=>{
                    func.call(store,{
                        commit:context.commit,
-                       dispatch:context.dispatch
+                       dispatch:context.dispatch,
+                       state:context.state
                    },payload)
                 })
             }else{
                 this._actions[name + type] = [function(payload){
                    func.call(store,{
                         commit:context.commit,
-                        dispatch:context.dispatch
+                        dispatch:context.dispatch,
+                        state:context.state
                    },payload)
                 }]  
             }
+        }
+    }
+    /**
+     * 注册getters
+     * @param {*} getters 
+     * @param {*} path 
+     * @param {*} namespaced 
+     * @param {*} context 
+     * @returns 
+     */
+    registerGetters(getters,path,namespaced,context){
+        if(!getters){
+            return;
+        }
+        if(typeof getters != 'object'){
+            throw new Error('Error!'); 
+        }
+        let name = this.getNameSpaced(path,namespaced)
+        let store = this;
+        for (const type in getters) {
+            let func = getters[type]
+            // if(this._getters[name + type]){
+            //     this._getters[name + type].push(()=>{
+            //         func.call(store,context.state,func)
+            //     })
+            // }else{
+            //    this._getters[name + type] = [()=>{
+            //     func.call(store,context.state,func)
+            // }]
+            // }
+            this._getters[name + type] = (store)=>{
+               return func.call(store,context.state)
+            };
         }
     }
     /**
@@ -126,7 +199,7 @@ export default class Store {
      * @param {*} path 
      */
     dspStore(options,root,path){
-        let {modules = {},state = {},namespaced , mutations , actions} = options;
+        let {modules = {},state = {},namespaced , mutations , actions , getters} = options;
         if(path.length == 0){
             root.state = {
                 ...state
@@ -137,6 +210,7 @@ export default class Store {
             }
         }
         const context = getContext(options,path,namespaced,this);
+        this.registerGetters(getters,path,namespaced,context);
         this.registerMutations(mutations,path,namespaced,context);//注册mutation函数
         this.registerActions(actions,path,namespaced,context);
         if(typeof modules == 'object'){//遍历modules
@@ -148,18 +222,23 @@ export default class Store {
     }
 }
 
-
+/**
+ * 得到模块对应的上下文
+ * @param {*} options 
+ * @param {*} path 
+ * @param {*} namespaced 
+ * @param {*} store 
+ * @returns 
+ */
 function getContext(options,path,namespaced,store){
     const curPath = [...path];
     namespaced = !! namespaced;
     const context = {
         commit: namespaced ? (type,payload)=>{
-            console.log(771,'commit');
             let name = store.getNameSpaced(path,namespaced);
             store.commit(name + type , payload)
         } : store.commit,
         dispatch: namespaced ? (type,payload)=>{
-            console.log(772,'dispatch')
         } : store.dispatch
     }
     Object.defineProperties(context, {

@@ -1,5 +1,7 @@
 <template>
   <div class="hello">
+     <h1>{{$store.getters.add}}</h1>
+     <h1>{{$store.getters['test/getAge']}}</h1>
      <h2>{{$store.state.name}}</h2>
      <h2>{{$store.state.count}}</h2>
      <h2>{{$store.state.test}}</h2>
@@ -7,6 +9,7 @@
      <button @click="changeNumber(1)">Add</button>
      <button @click="changeNumber(-1)">Delete</button>
      <button @click="action">Action</button>
+     <button @click="getW">getter2</button>
   </div>
 </template>
 
@@ -16,14 +19,20 @@ export default {
   props: {
     msg: String
   },
+  mounted:function(){
+    console.log(555,this.$store.getters)
+  },  
   methods:{
+    getW(){
+      this.$store.dispatch('test/change');
+    },
     changeNumber(num){
-      // this.$store.commit('change',num)
-      this.$store.commit('test/change',num)
+      this.$store.commit('change',num)
+      // this.$store.commit('test/change',num)
     },
     action(){
-      this.$store.dispatch('test/change')
-      //  this.$store.dispatch('change')
+      // this.$store.dispatch('test/change')
+       this.$store.dispatch('change')
     }
   }
 }
