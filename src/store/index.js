@@ -12,7 +12,17 @@ let store  = new Vuex.Store({
           age:24
         },
         modules:{
-
+          three: {
+            namespaced:true,
+            state: {
+              name: 'a',
+            },
+            getters:{
+              getZjof:function(state){
+                return 'getters3: hwt getZjof :' + state.name;
+              }
+            }
+          }
         },
         getters:{
           getAge:function(state){
@@ -20,15 +30,15 @@ let store  = new Vuex.Store({
           }
         },
         mutations:{
-          change:function(state,payload){
+          change2:function(state,payload){
             console.log(state,'change2',payload)
             state.age = state.age + 1;
           }
         },
         actions:{
-          change({commit},payload){
+          actionChange2({commit},payload){
             console.log(555,'actions')
-            commit('change','pp')
+            commit('change2','pp')
           }
         }
       },
@@ -36,7 +46,7 @@ let store  = new Vuex.Store({
     namespaced:true,
     state:{
       name:'hwt',
-      count:0,
+      count:44,
     },
     getters:{
       add(state){
@@ -52,7 +62,7 @@ let store  = new Vuex.Store({
       }
     },
     actions:{
-      change({commit},payload){
+      actionChange({commit},payload){
         console.log(444,'actions')
       }
     }

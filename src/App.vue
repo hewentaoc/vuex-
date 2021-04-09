@@ -13,7 +13,7 @@ export default {
     HelloWorld
   },
   mounted:function(){
-    console.log(333,this.$store)
+    // console.log(333,this.$store)
   }
 }
 </script>

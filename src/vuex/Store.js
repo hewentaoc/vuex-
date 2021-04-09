@@ -1,10 +1,4 @@
 import {Vue} from './install'
-/**
- * 疑问点，Duyi的方法是怎么把新添加的数据进行监听的
- * －第一节课确实没有监听深层次变化
- * 
- * 疑问点,为啥count的改变会导致num改变
- */
 export default class Store {
     constructor(options){
         let root = {};
@@ -174,6 +168,7 @@ export default class Store {
             //     func.call(store,context.state,func)
             // }]
             // }
+            // console.log(666,name,type)
             this._getters[name + type] = (store)=>{
                return func.call(store,context.state)
             };
@@ -200,14 +195,17 @@ export default class Store {
      */
     dspStore(options,root,path){
         let {modules = {},state = {},namespaced , mutations , actions , getters} = options;
+        let next = {};
         if(path.length == 0){
             root.state = {
                 ...state
             }
+            next = root.state;
         }else{
             root[path[path.length - 1]] = {
                 ...state
             }
+            next = root[path[path.length - 1]];
         }
         const context = getContext(options,path,namespaced,this);
         this.registerGetters(getters,path,namespaced,context);
@@ -216,7 +214,7 @@ export default class Store {
         if(typeof modules == 'object'){//遍历modules
             for (const key in modules) {
                 path.push(key);
-                this.dspStore(modules[key],root.state,path)
+                this.dspStore(modules[key],next,path)
             }
         }
     }
@@ -235,7 +233,7 @@ function getContext(options,path,namespaced,store){
     namespaced = !! namespaced;
     const context = {
         commit: namespaced ? (type,payload)=>{
-            let name = store.getNameSpaced(path,namespaced);
+            let name = store.getNameSpaced(curPath,namespaced);
             store.commit(name + type , payload)
         } : store.commit,
         dispatch: namespaced ? (type,payload)=>{
