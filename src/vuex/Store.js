@@ -14,6 +14,7 @@ export default class Store {
         })
         this._vm = vm;
         this.state = vm._data;
+        console.log(89,this._mutations)
     }
     /*
       触发mutation函数
@@ -213,8 +214,9 @@ export default class Store {
         this.registerActions(actions,path,namespaced,context);
         if(typeof modules == 'object'){//遍历modules
             for (const key in modules) {
-                path.push(key);
-                this.dspStore(modules[key],next,path)
+                // console.log(890,key)
+                // path.push(key);
+                this.dspStore(modules[key],next,path.concat([key]))
             }
         }
     }

@@ -42,6 +42,17 @@ let store  = new Vuex.Store({
           }
         }
       },
+      demo:{
+        namespaced:true,
+        state:{
+          demoState:'hwt'
+        },
+        mutations:{
+          changeDemo:function(state,payload){
+            console.log(state,'change2',payload)
+          }
+        },
+      }
     },
     namespaced:true,
     state:{
