@@ -1,4 +1,9 @@
-
+/**
+ * 处理传递过来的参数
+ * @param {} params 
+ * @param {*} extra 
+ * @returns 
+ */
 function handleMap(params,extra){
     let type = [];
     let path = '';
@@ -15,7 +20,14 @@ function handleMap(params,extra){
         path,  
     }
 }
-
+/**
+ * 
+ * @param {*} params 
+ * @param {*} extra 
+ * @returns {function(){
+ * 
+ * }}
+ */
 function mapState(params,extra){
     let {type , path } = handleMap(params,extra);
     let res = {}
