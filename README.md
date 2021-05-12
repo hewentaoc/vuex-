@@ -1,4 +1,5 @@
 
+Vuex
 ### 1. Vuex的实现			
 
    ### 　需要解决的问题
@@ -65,7 +66,7 @@ export default function install(_Vue){
 > 1. **对store中的配置项进行递归遍历得到处理后的state对象**
 > 2. **定义一个Vue实例,将state值当成Vue的data,进行数据的监听**
 
-      ```js
+```js
 {
     "state": {
         "name": "hwt",
@@ -78,7 +79,7 @@ export default function install(_Vue){
         }
     }
 }
-      ```
+```
 
 ### (4). **如何实现$store中getters中属性动态更新**
 
@@ -94,22 +95,22 @@ export default function install(_Vue){
 　state数据发生变化时候
 
 ```js
-        this._computer = {
+    this._computer = {
 
+    }
+    this.getters = {};
+    let self = this;
+    Object.keys(this._getters).forEach(item=>{
+        let func = this._getters[item];
+        this._computer[item] = function(){
+            return func(this)
         }
-        this.getters = {};
-        let self = this;
-        Object.keys(this._getters).forEach(item=>{
-            let func = this._getters[item];
-            this._computer[item] = function(){
-                return func(this)
+        Object.defineProperty(this.getters,item,{
+            get:function(){
+                return self._vm[item];
             }
-            Object.defineProperty(this.getters,item,{
-                get:function(){
-                    return self._vm[item];
-                }
-            })
         })
+    })
 ```
 
 ### (5) 如何实现modules,namespaced
@@ -122,7 +123,7 @@ export default function install(_Vue){
 
  4. 然后通过commit方法进行触发
 
-    ```js
+```js
     ['test']
     //没有namespaced
     this.mutation = {
@@ -145,7 +146,7 @@ export default function install(_Vue){
         }]
     }
     
-    ```
+ ```
 
 ### (6) **如何实现mutations,actions,如何触发对应的函数**
 
